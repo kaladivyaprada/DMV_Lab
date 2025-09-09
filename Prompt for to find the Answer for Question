@@ -1,0 +1,37 @@
+i)
+Preprocess(Data Cleaning, Data Integration, Data Transformation, Data Reduction) and Classify (Posteriori and Priori) panels. Analyze Input and Output Attributes.
+ii)
+Calculate the information of the whole data set on the basis of whether play is held or not.
+iii)
+Draw the histogram to show how the values of the play class occurs for each value of the outlook attribute
+iv)
+Derive minimum and maximum values, mean, and standard deviation
+v)
+Perform operations such as filter, delete, invert, Pattern, Undo, Edit, search, Select, Conversions etc
+vi)
+Examine the Output , classification error and Kappa statistics
+vii)
+Visualize threshold curve
+viii)
+Apply Logistic Regression model to classify
+ix)
+Measure the log likelihood of the clusters of training data. (Consider large data set.)
+x)
+Derive Information gain
+xi)
+Build Decision Tree on Humidity attribute. Also demonstrate decision tree after analysis of
+a)
+Sunny and Overcast dataset
+b)
+Sunny, Overcast and Rainy Data set
+xii)
+Compute Gini Index representing with respect to Temperature, Humidity, and Windy attributes.
+xiii)
+Obtain the Prediction of Play ‘Yes’ as well as ‘No’ for an unknown instance
+xiv)
+Apply Naïve Bayes Classifier to the Weather play data set and derive the probability for play no given outlook rainy   ..
+
+
+
+
+FOR THIS what i this explain deeply, using above dataset , what i do in weka tool , and what is this question and what we are doing in this 
