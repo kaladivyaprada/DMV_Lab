@@ -1,0 +1,405 @@
+Good — below I’ll explain **exactly what this assignment is asking** and **step-by-step how to do each part in WEKA** using the **Play Tennis** dataset you uploaded. I’ll also show the **math / numeric results** (so you can check them in WEKA) and explain what the output means. I’ll follow your numbering (i → xiv).
+
+---
+
+# Quick overview: what this whole question is
+
+You are being asked to run a complete data-mining pipeline on the Play-Tennis data:
+
+1. **Preprocess** the data, inspect attributes, transform/clean.
+2. **Measure information (entropy / info gain / Gini)** to see which attributes are informative.
+3. **Build and evaluate models** (Decision Tree, Logistic, Naïve Bayes), visualize performance (ROC/threshold curve), compute statistics (error rate, Kappa), and **make predictions** for unknown instances.
+4. **Cluster** (EM) and report log-likelihood of the clustering fit.
+
+All of that is available in WEKA’s Explorer (Preprocess / Classify / Cluster / Select attributes / Visualize). Below I give detailed step-by-step actions you can perform in WEKA and explain what each result means for this dataset.
+
+---
+
+# Before you start: load the dataset into WEKA
+
+1. Open **WEKA → Explorer**.
+2. **Preprocess tab → Open file…** → select your CSV or ARFF `play_tennis.csv` (WEKA accepts both).
+3. After loading, verify the **Attributes** list (left) and make sure the **class attribute** is `play` (use the drop-down at top right to set the class if necessary).
+4. Click the **Edit** button (bottom) to open the table viewer — this helps you check values, counts and to manually test edits.
+
+---
+
+# i) Preprocess (Cleaning / Integration / Transformation / Reduction) and Classify (Prior & Posterior) — WHAT & WEKA steps
+
+**What it means**
+
+* **Data cleaning**: fix missing values, standardize labels (Yes/No, Sunny/Overcast).
+* **Integration**: combine datasets (not needed here).
+* **Transformation**: convert text → nominal/numeric; optionally normalize or discretize numeric columns.
+* **Reduction**: remove irrelevant attributes (e.g., `day` or ID), or reduce dimensionality.
+
+**In WEKA (step-by-step)**
+
+* **Preprocess** tab:
+
+  * Use filter **unsupervised.attribute.ReplaceMissingValues** if there are missing values.
+  * Use **unsupervised.attribute.StringToNominal** if any text columns are treated as string.
+  * Use **unsupervised.attribute.NominalToBinary** or **unsupervised.attribute.Discretize** if you want binary/numeric inputs.
+  * To **remove** an attribute: select it in the attribute list and click **"Remove"**. You can also select multiple attributes and check **Invert selection** to work on the opposite set.
+  * Use the **Undo** button to revert the last change.
+* **Classify** tab:
+
+  * **Prior** classification concept: baseline that uses only class priors (majority class). In WEKA run **ZeroR** classifier. ZeroR picks the majority class — this gives you a prior baseline.
+  * **Posterior** classification concept: classifiers that compute P(class | attributes). Run **NaiveBayes**, **J48 (decision tree)** or **Logistic** to get posterior probabilities for each instance.
+
+**Interpretation**
+
+* Check whether categorical attributes are nominal (in WEKA they should show their values under attribute).
+* After transformation, proceed to attribute selection & modeling.
+
+---
+
+# ii) Calculate information of whole data set based on whether play is held or not (Entropy)
+
+**What it means**
+
+* Entropy measures uncertainty of class `play` before seeing any attribute.
+
+**Formula**
+Entropy = $- \sum_{c} p(c)\log_2 p(c)$
+
+**For this dataset (14 instances)**
+
+* `Yes` = 9, `No` = 5 → $p(Yes)=9/14$, $p(No)=5/14$
+* Entropy = $- (9/14)\log_2(9/14) - (5/14)\log_2(5/14)$ = **0.94029 bits**.
+
+**In WEKA**
+
+* WEKA itself doesn't show that single number in the Preprocess panel, but you get it implicitly when building J48 (tree) because J48 uses entropy. For direct info: go to **Select attributes → Attribute Evaluator: InfoGainAttributeEval** and the displayed base entropy is used internally. (Alternatively do the simple manual calculation using counts.)
+
+---
+
+# iii) Draw histogram: how `play` class occurs for each `outlook` value
+
+**What it means**
+
+* Visualize counts of Play=Yes/No for each outlook (Sunny, Overcast, Rain).
+
+**In WEKA**
+
+1. **Preprocess** tab.
+2. Select attribute `outlook` and click **Visualize** (or click **Visualize all**).
+3. In the Visualize window, select color by **class (play)**. The plot shows how many Yes/No occur for each outlook value.
+
+**What you should see (expected from Play-Tennis)**
+
+* **Overcast**: all or most → `Yes`
+* **Sunny**: mixed (some Yes, some No), higher No when humidity is high
+* **Rain**: mixed (some Yes, some No)
+
+This histogram helps you see that `outlook` is informative.
+
+---
+
+# iv) Derive min, max, mean, standard deviation
+
+**What it means**
+
+* For **numeric** attributes (temperature, humidity if numeric) compute min/max/mean/std.
+
+**In WEKA**
+
+* **Preprocess** tab: click each attribute — the right panel shows stats: **Distinct values, Missing, Min, Max, Mean, StdDev** (for numeric attributes).
+* If your dataset has temperature/humidity as categorical (Hot/Mild/Cool, High/Normal), numeric stats don’t apply — you’ll see counts instead.
+
+*(Note: some versions of the Play-Tennis dataset are categorical; others have numeric temperature and humidity. Use conversions if you need numeric values.)*
+
+---
+
+# v) Perform operations: filter, delete, invert, pattern, undo, edit, search, select, conversions
+
+**How to do each in WEKA**
+
+* **Filter**: Preprocess → Choose Filter (e.g. `unsupervised.attribute.Discretize`, `unsupervised.attribute.NominalToBinary`) → click **Apply**.
+* **Delete** attribute(s): select attribute(s) → click **Remove**.
+* **Invert selection**: select some attrs and press **Invert selection** to flip which attributes are selected for removal.
+* **Pattern / Search**: click **Edit** to open the instance table; you can use the table to find values or use the filters to select instances by value (unsupervised.instance.RemoveWithValues).
+* **Undo**: click **Undo** in Preprocess (reverts last change).
+* **Edit**: Preprocess → **Edit** → manually edit cells (change an instance’s attribute or class).
+* **Select**: click attributes in the left panel to highlight/include/exclude.
+* **Conversions**: `StringToNominal`, `NumericToNominal`, `NominalToBinary` available under Filters.
+
+**Tip**: use **Save** in Preprocess to export the cleaned/filtered dataset as ARFF for later experiments.
+
+---
+
+# vi) Examine the Output — classification error and Kappa statistics
+
+**What they are**
+
+* **Classification error** = 1 − Accuracy (fraction incorrectly classified).
+* **Kappa statistic** measures how much better the classifier is compared to random chance (value between −1 and 1; >0 is better than chance).
+
+**In WEKA**
+
+1. Go to **Classify** tab.
+2. Choose classifier (e.g., **J48**, **NaiveBayes**, **Logistic**).
+3. Choose evaluation mode (10-fold CV, Percentage split 70/30, or use a separate test set).
+4. Click **Start**. WEKA prints a result block that includes:
+
+   * **Correctly Classified Instances** and **Incorrectly Classified Instances** (so you can compute classification error).
+   * **Kappa statistic** (printed directly).
+   * **Confusion matrix**.
+
+**Interpretation**
+
+* Use Kappa to evaluate classifier beyond trivial majority class results (ZeroR baseline). Higher Kappa is better.
+
+---
+
+# vii) Visualize threshold curve (ROC)
+
+**What it is**
+
+* ROC (Receiver Operating Characteristic) shows TPR vs FPR for different probability thresholds and gives **AUC** (area under curve).
+
+**In WEKA**
+
+1. In **Classify**, after running a probabilistic classifier (NaiveBayes or Logistic), the result will appear in the result list.
+2. Select the result in the result list, then click **"Visualize threshold curve"**.
+3. Choose class (e.g., `Yes`) to plot ROC for that class. WEKA shows the ROC curve and AUC.
+
+---
+
+# viii) Apply Logistic Regression model to classify
+
+**In WEKA**
+
+1. **Classify → Choose → functions → Logistic**.
+2. Configure options (ridge, max iterations if needed).
+3. Choose evaluation (e.g., 10-fold CV) and click **Start**.
+4. WEKA prints coefficients and output probabilities; you can inspect the confusion matrix and AUC as above.
+
+**Interpretation**
+
+* Logistic gives you **posterior probabilities** P(play=Yes | attributes) and coefficients showing direction/importance of numeric predictors (note: categorical features are converted to dummy variables).
+
+---
+
+# ix) Measure the log likelihood of the clusters of training data (consider large dataset)
+
+**What it means**
+
+* For **clustering** (unsupervised), EM (Expectation-Maximization) or Gaussian Mixture models return **log-likelihood** of data given the model — higher is better (for the chosen number of clusters).
+
+**In WEKA**
+
+1. **Cluster** tab.
+2. Choose **EM** (or SimpleKMeans for k-means; EM provides log likelihood).
+3. Set number of clusters or use automatic selection.
+4. Click **Start** — WEKA prints the **log likelihood** and per-cluster sizes.
+5. For a large dataset you typically compute log-likelihood per instance (WEKA prints the total and may show per-instance scores if requested).
+
+**Interpretation**
+
+* Use log-likelihood to compare models (higher is better), but compare only across models with the same data and same pre-processing.
+
+---
+
+# x) Derive Information Gain
+
+**What it means**
+
+* **Information Gain** (IG) = how much an attribute reduces entropy of the class.
+
+**Formula**
+IG(attribute) = Entropy(class) − Σ\_v ( |S\_v|/|S| \* Entropy(class | attribute= v) )
+
+**In WEKA**
+
+1. **Select attributes** tab.
+2. Choose **Attribute evaluator** = `InfoGainAttributeEval`.
+3. Choose **Search method** = `Ranker`.
+4. Click **Start**. WEKA prints InfoGain for each attribute sorted.
+
+**Numeric results for your Play-Tennis dataset** (computed from the uploaded CSV):
+
+* **Entropy(play)** = 0.94029 bits (base).
+* **InfoGain** values:
+
+  * `outlook` = **0.24675**
+  * `humidity` = **0.15184**
+  * `wind` = **0.04813**
+  * `temperature` = **0.02922**
+
+**Interpretation**: `outlook` is the most informative single attribute (this matches the textbook Play-Tennis example).
+
+---
+
+# xi) Build Decision Tree on Humidity attribute (and subsets)
+
+**Goal**
+
+* Build decision tree using **only humidity**. Then run the same for subsets: (a) Sunny + Overcast, (b) Sunny + Overcast + Rain (whole data).
+
+**WEKA steps**
+
+1. **Preprocess**: remove other attributes except `humidity` and `play` (select attributes and click **Remove** for the others).
+2. **Classify → Choose → trees → J48** (this is WEKA’s C4.5 implementation).
+3. Click **Start** to build tree. The textual tree appears in the result window.
+
+**For subset Sunny+Overcast**:
+
+* **Preprocess → Filter → unsupervised.instance.RemoveWithValues** (choose `outlook` attribute and remove value `Rain`) OR open **Edit** and delete Rain instances manually; then run the same J48 on the reduced dataset.
+
+**What the result shows (this dataset)**
+
+* Using humidity only, the decision rule becomes:
+
+  * If `humidity = High` → **play = No** (majority)
+  * If `humidity = Normal` → **play = Yes**
+* Counts behind that decision:
+
+  * `High`: 7 instances → 4 No, 3 Yes → majority = No
+  * `Normal`: 7 instances → 6 Yes, 1 No → majority = Yes
+
+This simple split is exactly what the single-attribute tree will produce.
+
+---
+
+# xii) Compute Gini Index w\.r.t Temperature, Humidity, and Windy
+
+**What it means**
+
+* **Gini impurity** measures class impurity: $G = 1 - \sum p_i^2$. For a split, compute a **weighted Gini** across child subsets.
+
+**Formulas**
+
+* Gini(total) = $1 - (p_{Yes}^2 + p_{No}^2)$
+* Weighted Gini after split on attribute A = Σ ( |S\_v|/|S| \* Gini(S\_v) )
+
+**Numeric results (Play-Tennis dataset)**
+
+* Gini(play, entire) = **0.45918** (with pYes=9/14, pNo=5/14)
+* Weighted Gini after splits:
+
+  * `outlook` split → **0.342857**
+  * `humidity` split → **0.367347**
+  * `wind` split → **0.428571**
+  * `temperature` split → **0.440476**
+
+**Interpretation**
+
+* Lower weighted Gini after a split means that split gives purer children. `outlook` produces the lowest weighted Gini → best split by Gini, consistent with InfoGain.
+
+**In WEKA**
+
+* WEKA’s J48 uses entropy/information gain. If you want Gini-based splits, use **trees → SimpleCart** (WEKA’s CART implementation) and inspect the tree; or compute the above Gini numbers manually using counts from Preprocess/Edit.
+
+---
+
+# xiii) Obtain predictions of Play = ‘Yes’ and ‘No’ for an unknown instance
+
+**How to do in WEKA**
+
+1. Train a classifier on the dataset (e.g., J48 or NaiveBayes) in **Classify**.
+2. To obtain a prediction for a single unknown instance:
+
+   * Option A (quick): **Preprocess → Edit**, add a new row where you put attribute values and set the class value to `?` (missing). Save this as a file and in **Classify → Test options** choose **Supplied test set** and load that file. When you run the classifier, WEKA will output predicted class and probabilities for the instance.
+   * Option B: Use the **Visualize** or **"More options" -> Output predictions** to list per-instance predictions; the predicted class and class probability (posterior) are shown.
+3. WEKA outputs both predicted class (Yes/No) and the posterior probability P(Yes) and P(No).
+
+**Example (logical/pseudocode)**
+
+* Unknown: `outlook=Rain`, `temperature=Mild`, `humidity=High`, `wind=Weak`.
+* WEKA (NaiveBayes or J48) will print predicted class and e.g. probabilities `[No = 0.60, Yes = 0.40]` (actual numbers depend on model).
+
+**From our earlier calculation (scikit example)**
+
+* Decision tree (humidity-only) would predict **No** (because humidity=High is majority No). Naive Bayes and logistic may give a probability rather than a hard deterministic result.
+
+---
+
+# xiv) Apply Naïve Bayes and derive probability P(play = No | outlook = Rain)
+
+**What Naïve Bayes does**
+
+* Uses Bayes formula with conditional independence assumption:
+  $P(C|x) \propto P(C)\prod_i P(x_i | C)$
+
+**Manual (frequency-based) calculation for this dataset**
+
+* $P(play = No) = 5/14$
+* Among the `No` instances (5 instances), how many have `outlook=Rain`? 2 → $P(outlook=Rain | play=No) = 2/5 = 0.4$
+* $P(outlook = Rain) = 5/14$
+* Using Bayes:
+
+  $$
+  P(play=No \mid outlook=Rain) = \frac{P(outlook=Rain\mid play=No) \cdot P(play=No)}{P(outlook=Rain)} = \frac{0.4 \cdot (5/14)}{5/14} = 0.4
+  $$
+* So **P(play=No | outlook=Rain) = 0.40 (40%)**.
+
+**In WEKA**
+
+1. **Classify → Choose → bayes → NaiveBayes**.
+2. Run evaluation (use training set or cross-validation).
+3. To get P(play=No | outlook=Rain) specifically:
+
+   * Create a test instance with `outlook = Rain` and class `?` (other attributes may be set or omitted depending on your model) and supply as test set → WEKA prints the posterior probability distribution for that instance.
+   * If you use **CategoricalNB** (NaiveBayes) and only supply the `outlook` feature (others missing), WEKA’s output probabilities will match the frequency-based computation (modulo smoothing).
+
+---
+
+# Additional notes, hints and recommended WEKA workflow (practical checklist)
+
+**Typical order of operations in WEKA for this assignment**
+
+1. Preprocess → load dataset → inspect attributes → set class attribute to `play`.
+2. Clean/transform: ReplaceMissingValues, StringToNominal, (if numeric) Normalize/Standardize. Save a working ARFF.
+3. Attribute selection → InfoGainAttributeEval + Ranker → record IG values.
+4. Preprocess → create special datasets:
+
+   * only-humidity dataset (remove other attributes),
+   * sunny+overcast subset (RemoveWithValues or Edit),
+   * full dataset.
+5. Classify: run **ZeroR** (prior baseline), **J48**, **NaiveBayes**, **Logistic**. For each run use 10-fold CV and/or percentage split and record:
+
+   * Correctly/Incorrectly classified, classification error, Kappa, Confusion matrix.
+6. For classifiers that output probabilities, view **Visualize threshold curve** → ROC + AUC.
+7. Cluster: **Cluster** tab → run **EM** → note log-likelihood and cluster sizes.
+8. Prediction: add a test instance with `?` class and use **Supplied test set** to get predicted labels and posterior probabilities.
+
+**What to write in a lab report**
+
+* For each step include: method used in WEKA, parameter settings, output (copy/paste the result buffer), and a short interpretation:
+
+  * e.g., “InfoGain: outlook=0.24675 → outlook is the most informative attribute; humidity is second.”
+  * Confusion matrix + accuracy + kappa for J48, Logistic, NaiveBayes.
+  * Decision tree rules (J48 output).
+  * P(play=No | outlook=Rain) = 0.40, with brief comment (“Rain alone is not a strong indicator of No — only 40%”).
+
+---
+
+# Quick summary of computed numbers (you can paste these into your report)
+
+* Entropy of `play` (base): **0.94029 bits**
+* InfoGain:
+
+  * outlook = **0.24675**
+  * humidity = **0.15184**
+  * wind = **0.04813**
+  * temperature = **0.02922**
+* Gini(play) = **0.45918**
+* Weighted Gini after splits:
+
+  * outlook **0.342857**, humidity **0.367347**, wind **0.428571**, temperature **0.440476**
+* Decision tree (humidity-only) rule:
+
+  * humidity = High → **No**, humidity = Normal → **Yes**
+  * (Counts: High: 7 instances → 4 No / 3 Yes; Normal: 7 instances → 6 Yes / 1 No)
+* Naïve Bayes: **P(play = No | outlook = Rain) = 0.40 (40%)**
+
+---
+
+If you want, I can now:
+
+* Produce a **step-by-step printed WEKA lab report** (word/markdown) that lists the exact WEKA filters and parameter values to click and the exact expected text you’ll see in the result window (ready to copy-paste into your assignment).
+* Or I can produce **a short video / screenshots checklist** (but I can only produce static steps and annotated images here).
+* Or **walk you interactively**: I can create a numbered checklist you can follow in WEKA and you paste back the result buffer text and I explain it line by line.
+
+Which of those would help most — a printable step-by-step WEKA report (with exact button/menu names) or the clickable checklist you can follow while running WEKA yourself?
