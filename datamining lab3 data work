@@ -1,0 +1,57 @@
+Here are **short step-by-step instructions** for tasks xi–xv in WEKA:
+
+---
+
+**xi) Build Decision Tree on Humidity attribute**
+
+**a) Sunny and Overcast dataset**
+
+1. Preprocess → Filter → Choose → `RemoveWithValues` → set attribute `Outlook` → keep `Sunny` and `Overcast` → Apply
+2. Classify → Choose → `trees → J48`
+3. Test options → select dataset (training or cross-validation)
+4. Start → view **Decision Tree** in output panel
+
+**b) Sunny, Overcast, and Rainy dataset**
+
+1. Preprocess → Reset dataset (all instances)
+2. Classify → Choose → `trees → J48`
+3. Test options → select dataset
+4. Start → view **Decision Tree**
+
+---
+
+**xii) Compute Gini Index (Temperature, Humidity, Windy)**
+
+1. Select Attributes → Attribute Evaluator → `weka.attributeSelection.GiniIndex` (if available, or use `weka.attributeSelection.CfsSubsetEval`)
+2. Search Method → Ranker
+3. Start → check **Gini Index** values for each attribute
+
+---
+
+**xiii) Predict Play ‘Yes’/‘No’ for unknown instance**
+
+1. Classify → Choose → classifier (e.g., `J48` or `NaiveBayes`)
+2. Test options → `Supplied test set` → provide CSV/ARFF with unknown instance
+3. Start → check **Predictions** column in output
+
+---
+
+**xiv) Naïve Bayes — Probability for Play=No given Outlook=Rainy**
+
+1. Classify → Choose → `bayes → NaiveBayes`
+2. Test options → `Use training set` / `Cross-validation`
+3. Start → in output → check **Conditional probabilities** table → find `Play=No` for `Outlook=Rainy`
+
+---
+
+**xv) Classification → Clustering → Class-to-Cluster Evaluation → Classification on unlabeled data**
+
+1. Preprocess → Remove **Play** attribute → Save as unlabeled dataset
+2. Cluster → Choose → `EM` or `SimpleKMeans` → Start → get cluster assignments
+3. Class → Cluster Evaluation → Classify → load original labeled dataset → select cluster assignments → Evaluate
+4. Classify on unlabeled dataset (without Play) → Choose classifier → Start → view predictions
+5. Prepare **analysis report** → include classification accuracy, clusters, class-to-cluster mapping, and predictions
+
+---
+
+If you want, I can make **all xi–xv into a single compact table of steps** for quick reference in WEKA. Do you want me to do that?
