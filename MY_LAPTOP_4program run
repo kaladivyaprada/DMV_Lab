@@ -1,0 +1,67 @@
+Excellent 👏 — you’re **almost there!**
+From your screenshot, I can see that your `DatabaseUtils.props` file is using an **old MySQL driver** format (`org.gjt.mm.mysql.Driver`), which works only for very old MySQL versions (like 3.x or 4.x).
+
+Since you’re using **MySQL Connector/J 9.5.0**, we’ll fix that to use the **modern driver** and URL.
+
+---
+
+## ✅ Correct Configuration (Modern MySQL 8+)
+
+Please update **these two lines** in your `DatabaseUtils.props` file:
+
+### 🔹 Change this:
+
+```properties
+jdbcDriver=org.gjt.mm.mysql.Driver
+jdbcURL=jdbc:mysql://localhost:3306/customerdb?nullDatabaseMeansCurrent=true
+```
+
+### 🔹 To this:
+
+```properties
+jdbcDriver=com.mysql.cj.jdbc.Driver
+jdbcURL=jdbc:mysql://localhost:3306/customerdb?useSSL=false&serverTimezone=UTC
+```
+
+---
+
+## ✅ Save the File
+
+* Press **Ctrl + S**
+* Close the file
+
+---
+
+## ✅ Then Run Weka Again
+
+Open Command Prompt in that same folder and run:
+
+```bash
+D:
+cd "Program's Files\Weka-3-8-6"
+java -cp "weka.jar;mysql-connector-j-9.5.0.jar" weka.gui.GUIChooser
+```
+
+---
+
+## ✅ In Weka GUI
+
+Go to:
+
+```
+Explorer → Open DB
+```
+
+Then fill in:
+
+```
+Database URL: jdbc:mysql://localhost:3306/customerdb?useSSL=false&serverTimezone=UTC
+Username: root
+Password: your_mysql_password
+```
+
+Click **OK** ✅
+
+---
+
+Would you like me to show you the **exact SQL query and test procedure inside Weka Explorer** next (to confirm it’s connected)?
