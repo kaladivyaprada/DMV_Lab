@@ -1,0 +1,58 @@
+Perfect 👌 — that screenshot is very helpful.
+
+You have:
+
+```
+mysql-connector-j-9.5.0.jar
+```
+
+✅ correctly placed **inside your Weka folder** at
+`C:\Program Files\Weka-3-8-6\`
+
+That’s exactly right — so you’re one step away from connecting successfully.
+
+---
+
+## ✅ Now Run Weka with MySQL Connector
+
+1. Open **Command Prompt (cmd.exe)** (⚠️ not PowerShell)
+   → Press **Win + R**, type `cmd`, hit Enter.
+
+2. Type these commands exactly:
+
+```cmd
+cd "C:\Program Files\Weka-3-8-6"
+java -cp "weka.jar;mysql-connector-j-9.5.0.jar" weka.gui.GUIChooser
+```
+
+*(Make sure to include the quotes and semicolon — that’s crucial on Windows.)*
+
+---
+
+## ✅ Then in Weka:
+
+1. Go to **Explorer → Preprocess → Open DB**
+2. Enter this JDBC URL:
+
+   ```
+   jdbc:mysql://localhost:3306/customerdb?useSSL=false&serverTimezone=UTC
+   ```
+3. Click the **🧍 person icon** beside URL → enter:
+
+   ```
+   Username: root
+   Password: (your MySQL password)
+   ```
+4. Click **OK**
+5. Now ⚡ **Execute** will be enabled
+   → Run:
+
+   ```sql
+   SELECT * FROM customers;
+   ```
+
+You should now see your MySQL table data appear in the **Result** box, and you can **Load** it into Weka.
+
+---
+
+Would you like me to also show how to **edit Weka’s DatabaseUtils.props file** so this setup works permanently (without using the `java -cp ...` command every time)?
