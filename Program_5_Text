@@ -1,0 +1,258 @@
+Using Tableau do the following. Consider Titanic Data Set. Perform the following using Tableau platform: i. Perform Calculations:  
+i) Calculate the survival rate.  Hint: you can use the following formula  SUM(IIF([Survived] = 1, 1, 0)) / COUNT([PassengerId])  
+ii) Calculate the average  iii) Calculate the total fare 2. Perform Group Operations: i) Create a group to categorize passengers by age 
+ii) Create a group to categorize passengers by fare iii) Create a set to include only passengers who survived 3. Perform Set Operations: 
+i) Create a set to include only passengers who survived ii) Create a set to include only passengers who did not survive 
+iii)Create a set to include only passengers who traveled in first class 4. Create Dashboard  
+i). Survival Rate by Age Group: Create a bar chart to display the survival rate by age group.  
+ii). Average Fare by Fare Group: Create a bar chart to display the average fare by fare group.  
+iii). Survivors by Class: Create a pie chart to display the number of survivors by class 5. 
+Add Additional Visualizations 6. Combine Dashboards   ,, give complete detailed step by step guide tp do this
+
+
+
+
+Excellent — let’s go step-by-step in detail on how to complete this full Tableau project using the **Titanic Dataset** (for example, from Kaggle).
+These steps assume you have Tableau Desktop or Tableau Public installed and a basic CSV dataset such as `titanic.csv`.
+
+---
+
+## 🧭 Step 0: Prepare the Dataset
+
+Ensure your dataset includes (at minimum) these columns:
+
+| Column      | Description                       |
+| ----------- | --------------------------------- |
+| PassengerId | Unique ID                         |
+| Survived    | 1 = Survived, 0 = Did not survive |
+| Pclass      | Passenger class (1, 2, 3)         |
+| Name        | Passenger name                    |
+| Sex         | Male/Female                       |
+| Age         | Age in years                      |
+| Fare        | Fare paid                         |
+| SibSp       | Siblings/spouses aboard           |
+| Parch       | Parents/children aboard           |
+| Embarked    | Port of embarkation               |
+
+---
+
+## 🪜 Step 1: Connect and Import Data
+
+1. Open **Tableau Desktop** or **Tableau Public**.
+2. Click **“Connect to a file” → “Text File”**.
+3. Select your `titanic.csv` file.
+4. Tableau will load a preview. Click **“Sheet 1”** at the bottom to start analysis.
+
+---
+
+## ⚙️ Step 2: Perform Calculations
+
+### (i) Calculate the Survival Rate
+
+1. In the **Data pane**, click the dropdown → **Create Calculated Field**.
+2. Name it **“Survival Rate”**.
+3. Enter the formula:
+
+   ```tableau
+   SUM(IIF([Survived] = 1, 1, 0)) / COUNT([PassengerId])
+   ```
+4. Click **OK**.
+
+✅ This calculated field gives the proportion of passengers who survived.
+
+---
+
+### (ii) Calculate the Average Age (or Average Fare)
+
+1. Create another Calculated Field → name it **“Average Age”**.
+2. Formula:
+
+   ```tableau
+   AVG([Age])
+   ```
+
+   (You can similarly create `Average Fare` using `AVG([Fare])`.)
+
+---
+
+### (iii) Calculate the Total Fare
+
+1. Create another Calculated Field → name it **“Total Fare”**.
+2. Formula:
+
+   ```tableau
+   SUM([Fare])
+   ```
+3. Click **OK**.
+
+✅ You now have 3 calculated fields:
+
+* Survival Rate
+* Average Age (or Fare)
+* Total Fare
+
+---
+
+## 🧩 Step 3: Perform Group Operations
+
+### (i) Group Passengers by Age
+
+1. In the Data Pane, right-click on **Age → Create → Group**.
+2. Click **Bins** instead of Group for continuous ranges:
+
+   * Choose **Size of bins = 10** (for example: 0–10, 11–20, …)
+   * Name it **“Age Group”**.
+3. Click **OK**.
+
+✅ You’ll now have a new field `[Age (bin)]` representing Age Groups.
+
+---
+
+### (ii) Group Passengers by Fare
+
+1. Right-click **Fare → Create → Bins**.
+2. Choose **Size of bins** such as `50` (depending on the dataset range).
+3. Name it **“Fare Group”**.
+4. Click **OK**.
+
+✅ You now have `[Fare (bin)]`.
+
+---
+
+### (iii) Create a Set: Passengers Who Survived
+
+1. In the Data pane, right-click **Survived → Create → Set**.
+2. Name it **“Survived Set”**.
+3. In the dialog:
+
+   * Select only value **“1”** (which means survived).
+   * Click **OK**.
+
+✅ This set will include only survivors.
+
+---
+
+## 🔁 Step 4: Perform Set Operations
+
+### (i) Set: Passengers Who Survived
+
+Already created above — **Survived Set**.
+
+### (ii) Set: Passengers Who Did Not Survive
+
+1. Right-click **Survived → Create → Set**.
+2. Name it **“Not Survived Set”**.
+3. Select **“0”** in the dialog.
+4. Click **OK**.
+
+### (iii) Set: Passengers Who Traveled in First Class
+
+1. Right-click **Pclass → Create → Set**.
+2. Name it **“First Class Set”**.
+3. Select **“1”**.
+4. Click **OK**.
+
+✅ You can now compare these sets (e.g., use set intersections, unions, etc., in Tableau).
+
+---
+
+## 📊 Step 5: Create Visualizations for the Dashboard
+
+### (i) **Survival Rate by Age Group**
+
+1. Go to **Sheet 2**.
+2. Drag **Age (bin)** to Columns.
+3. Drag **Survived** to Rows → change aggregation to **AVG** (right-click → Measure → Average).
+4. Format axis (0 to 1) to represent percentage.
+5. Optionally, drag **Sex** to Color for gender comparison.
+6. Rename the sheet: **“Survival Rate by Age Group”**.
+
+---
+
+### (ii) **Average Fare by Fare Group**
+
+1. Go to **Sheet 3**.
+2. Drag **Fare (bin)** to Columns.
+3. Drag **Fare** to Rows → change aggregation to **AVG**.
+4. Change mark type to **Bar**.
+5. Rename the sheet: **“Average Fare by Fare Group”**.
+
+---
+
+### (iii) **Survivors by Class**
+
+1. Go to **Sheet 4**.
+2. Drag **Pclass** to Color and to Label.
+3. Drag **Survived** to Rows → change aggregation to **SUM**.
+4. Convert the chart to **Pie Chart**:
+
+   * From the **Marks** dropdown → select **Pie**.
+5. Drag **SUM(Survived)** to Angle and **Pclass** to Color.
+6. Rename the sheet: **“Survivors by Class”**.
+
+---
+
+## 🌇 Step 6: Add Additional Visualizations
+
+You can add more as desired, such as:
+
+* **Survival Rate by Gender**
+* **Survival Rate by Embarked Port**
+* **Age vs Fare Scatter Plot (colored by survival)**
+
+Example:
+
+1. Drag **Age** to Columns.
+2. Drag **Fare** to Rows.
+3. Drag **Survived** to Color.
+4. Rename the sheet “Fare vs Age by Survival”.
+
+---
+
+## 🧱 Step 7: Create and Combine Dashboards
+
+1. Click the **New Dashboard** button at the bottom (looks like a window with a “+”).
+2. On the left, drag your created **sheets** into the dashboard area:
+
+   * “Survival Rate by Age Group”
+   * “Average Fare by Fare Group”
+   * “Survivors by Class”
+   * Any additional visualizations
+3. Arrange them neatly:
+
+   * Top: Survival Rate by Age Group (bar chart)
+   * Middle: Average Fare by Fare Group
+   * Bottom: Survivors by Class (pie)
+4. Add **Titles** and **Legends** for clarity.
+5. You can add **Filters** (e.g., by Sex or Class) for interactivity:
+
+   * Right-click a field → **Show Filter**.
+6. Rename your dashboard: **Titanic Survival Dashboard**.
+
+---
+
+## 🧾 Optional Enhancements
+
+* Format tooltips to show detailed info.
+* Add filters for **Gender**, **Class**, **Embarked**.
+* Add **dynamic annotations** for insights (e.g., “Higher survival rate for 20–30 age group”).
+
+---
+
+## ✅ Summary of What You’ve Done
+
+| Task                             | Tableau Object    | Output                       |
+| -------------------------------- | ----------------- | ---------------------------- |
+| Calculate survival rate          | Calculated Field  | % of passengers survived     |
+| Calculate average and total fare | Calculated Fields | AVG and SUM values           |
+| Create age & fare groups         | Bins              | Discrete ranges              |
+| Create sets                      | Sets              | Subgroups by condition       |
+| Visualize metrics                | Sheets            | Bar, Pie, etc.               |
+| Combine into dashboard           | Dashboard         | Interactive Titanic Analysis |
+
+---
+
+Would you like me to provide **a sample layout design** (e.g., recommended dashboard arrangement and color palette)? I can outline exactly how to make it presentation-ready.
+
+
+
